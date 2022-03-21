@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
 
@@ -99,7 +100,7 @@ public class MainActivity extends Activity {
                     if (HSSFDateUtil.isCellDateFormatted(cell)) {
                         double date = cellValue.getNumberValue();
                         SimpleDateFormat formatter =
-                                new SimpleDateFormat("dd/MM/yy");
+                                new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
                         value = formatter.format(HSSFDateUtil.getJavaDate(date));
                     } else {
                         value = "" + numericValue;
@@ -117,20 +118,14 @@ public class MainActivity extends Activity {
         return value;
     }
 
-    /**
-     * print line to the output TextView
-     *
-     * @param str
-     */
     private void printlnToUser(String str) {
-        final String string = str;
         if (output.length() > 8000) {
             CharSequence fullOutput = output.getText();
             fullOutput = fullOutput.subSequence(5000, fullOutput.length());
             output.setText(fullOutput);
             output.setSelection(fullOutput.length());
         }
-        output.append(string + "\n");
+        output.append(str + "\n");
     }
 
     public void share(File file) {
