@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
             Cell cell = row.createCell(0);
             cell.setCellValue(i);
         }
-        String outFileName = "file_to_share";
+        String outFileName = "file_to_share.xlsx";
         try {
             printlnToUser("writing file " + outFileName);
             File cacheDir = getCacheDir();
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
             outputStream.flush();
             outputStream.close();
             printlnToUser("sharing file...");
-            share(outFileName);
+            share(outFile);
         } catch (Exception e) {
             /* proper exception handling to be here */
             printlnToUser(e.toString());
@@ -133,9 +133,9 @@ public class MainActivity extends Activity {
         output.append(string + "\n");
     }
 
-    public void share(String fileName) {
+    public void share(File file) {
         Uri fileUri = FileProvider.getUriForFile(this,
-                BuildConfig.APPLICATION_ID + ".provider", new File(fileName));
+                BuildConfig.APPLICATION_ID + ".provider", file);
         Log.d("yue_", "fileUri: " + fileUri);
         printlnToUser("sending " + fileUri.toString() + " ...");
         Intent shareIntent = new Intent();
