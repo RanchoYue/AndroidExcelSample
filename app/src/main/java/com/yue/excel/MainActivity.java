@@ -1,12 +1,14 @@
 package com.yue.excel;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import androidx.core.content.FileProvider;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,7 +38,7 @@ public class MainActivity extends Activity {
 
     public void onReadClick(View view) {
         printlnToUser("reading XLSX file from resources");
-        InputStream stream = getResources().openRawResource(R.raw.test1);
+        InputStream stream = getResources().openRawResource(R.raw.test);
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(stream);
             XSSFSheet sheet = workbook.getSheetAt(0);
@@ -60,13 +62,13 @@ public class MainActivity extends Activity {
     public void onWriteClick(View view) {
         printlnToUser("writing xlsx file");
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("mysheet"));
+        XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("my_sheet"));
         for (int i = 0; i < 10; i++) {
             Row row = sheet.createRow(i);
             Cell cell = row.createCell(0);
             cell.setCellValue(i);
         }
-        String outFileName = "filetoshare.xlsx";
+        String outFileName = "file_to_share";
         try {
             printlnToUser("writing file " + outFileName);
             File cacheDir = getCacheDir();
@@ -76,7 +78,7 @@ public class MainActivity extends Activity {
             outputStream.flush();
             outputStream.close();
             printlnToUser("sharing file...");
-            share(outFileName, getApplicationContext());
+            share(outFileName);
         } catch (Exception e) {
             /* proper exception handling to be here */
             printlnToUser(e.toString());
@@ -131,8 +133,10 @@ public class MainActivity extends Activity {
         output.append(string + "\n");
     }
 
-    public void share(String fileName, Context context) {
-        Uri fileUri = Uri.parse("content://" + getPackageName() + "/" + fileName);
+    public void share(String fileName) {
+        Uri fileUri = FileProvider.getUriForFile(this,
+                BuildConfig.APPLICATION_ID + ".provider", new File(fileName));
+        Log.d("yue_", "fileUri: " + fileUri);
         printlnToUser("sending " + fileUri.toString() + " ...");
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
